@@ -1,7 +1,4 @@
 <script setup>
-export default {
-  name: 'SnakeGame',
-}
 
 let board;
 let context;
@@ -16,8 +13,8 @@ let snakeX = 0;
 let snakeY = 0;
 let tail = [];
 
-let foodX = 0;
-let foodY = 0;
+let foodX;
+let foodY;
 
 let score = 0;
 
@@ -28,8 +25,8 @@ let gameOver = false;
 
 
 window.onload = () => {
-  board = document.getElementById('board');
-  context = board.getContext('2d');
+  board = document.getElementById("board");
+  context = board.getContext("2d");
 
   appleAudio = new Audio('apple_sound.mp3');
   gameOverAudio = new Audio('game_over_sound.mp3');
@@ -50,31 +47,30 @@ window.onload = () => {
 }
 
 const update = () => {
-  //clear screen
-
+  // Clear screen
   createRect(0, 0, board.width, board.height)
 
   if (gameOver) {
-    //Game end screen
 
-    createText('Game Over', board.width / 2, board.height / 2 - 25, 'center', 50);
+    // Game end screen
+
+    createText(`Game Over`, board.width / 2, board.height / 2 - 25, 'center', 50);
 
     createText(`Score: ${score}`, board.width / 2, board.height / 2 + 25, 'center');
 
-    createText('Click to Start Again', (cols * blockSize) / 2, board.height - 50, 'center');
+    createText(`Click to Start Again`, (cols * blockSize) / 2, board.height - 50, 'center');
 
     return
   }
 
-  // write score
-
+  // Write score
   createText(`Score: ${score}`, 30, 40);
 
   // Create first food
-  createRect(foodX, foodY, blockSize, 'lime');
+  createRect(foodX, foodY, blockSize, blockSize, "lime");
 
   // Did it eat
-  if (snakeX === foodX && snakeY === foodY) {
+  if (snakeX == foodX && snakeY == foodY) {
     tail.push([foodX, foodY]);
 
     score += 10;
@@ -85,7 +81,7 @@ const update = () => {
   }
 
   // Snake tail
-  for (let i = 0; i < tail.length; i++) {
+  for (let i = tail.length - 1; i > 0; i--) {
     tail[i] = tail[i - 1];
   }
 
@@ -97,7 +93,7 @@ const update = () => {
   snakeX += velocityX * blockSize;
   snakeY += velocityY * blockSize;
 
-  createRect(snakeX, snakeY, blockSize, 'orange');
+  createRect(snakeX, snakeY, blockSize, blockSize, 'orange');
 
   for (let i = 0; i < tail.length; i++) {
     createRect(tail[i][0], tail[i][1], blockSize, blockSize, 'lime');
@@ -108,24 +104,57 @@ const update = () => {
     gameOverEvent()
   }
 
-
-  // You're here
+  // Shot herself
+  for (let i = 0; i < tail.length; i++) {
+    if (snakeX === tail[i][0] && snakeY === tail[i][1]) {
+      gameOverEvent()
+    }
+  }
 
   // https://www.youtube.com/watch?v=wNTh_8CGj6s&ab_channel=Codeminton 16:07 min
 
 }
 const foodPlace = () => {
+  foodX = Math.floor(Math.random() * cols) * blockSize;
+  foodY = Math.floor(Math.random() * rows) * blockSize;
 }
-const changeDirection = () => {
+
+const changeDirection = (e) => {
+  if (e.code === 'ArrowUp') {
+    velocityX = 0;
+    velocityY = -1;
+  } else if (e.code === 'ArrowDown') {
+    velocityX = 0;
+    velocityY = 1;
+  } else if (e.code === 'ArrowLeft') {
+    velocityX = -1;
+    velocityY = 0;
+  } else if (e.code === 'ArrowRight') {
+    velocityX = 1;
+    velocityY = 0;
+  }
 }
 
 const gameOverEvent = () => {
+  gameOver = true;
+  gameOverAudio.play();
+  tail = [];
+  snakeX = 0;
+  snakeY = 0;
+  velocityX = 1;
+  velocityY = 0;
 }
 
-const createRect = () => {
+const createRect = (x, y, width, height, color = "black") => {
+  context.fillStyle = color;
+  context.fillRect(x, y, width, height);
 }
 
-const createText = () => {
+const createText = (text, x, y, textAlign = "start", fontSize = 20) => {
+  context.fillStyle = "lime";
+  context.font = `${fontSize}px Roboto Mono`;
+  context.textAlign = textAlign;
+  context.fillText(text, x, y)
 }
 
 </script>
@@ -141,20 +170,16 @@ const createText = () => {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
-.container {
-  background-color: black;
-  padding: 2rem;
+h1 {
   display: flex;
-  flex-direction: column;
-  align-items: center;
+  justify-content: center;
+  color: lime;
+  margin-bottom: 2.5rem;
+}
 
-  h1 {
-    color: lime;
-    margin-bottom: 2.5rem;
-  }
-
-  canvas {
-    border: 3px solid lime;
-  }
+canvas {
+  width: 80vw;
+  height: 80vh;
+  border: 3px solid lime;
 }
 </style>

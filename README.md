@@ -1,5 +1,6 @@
 ## The codes of the snake game
 
+You can try it https://relaxed-lollipop-a6ad6a.netlify.app/
 
 
 ## Project setup

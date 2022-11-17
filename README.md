@@ -1,4 +1,6 @@
-# snake-game
+## The codes of the snake game
+
+
 
 ## Project setup
 ```
